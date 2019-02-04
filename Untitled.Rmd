@@ -1,0 +1,93 @@
+---
+title: "Lab_Block 1"
+author: "Fatin Zunairah"
+date: "04/02/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here) 
+library(googlesheets)
+library(readr)
+library(lubridate)
+library(forcats)
+```
+
+
+```{r}
+sales <- read_csv(here::here("lab-practice/block1/Data/resale-flat-prices-based-on-registration-date-from-jan-2015-onwards.csv"))
+
+sales %>% 
+  glimpse()
+```
+
+```{r}
+sales %>% 
+  mutate(month = ymd(month, truncated=1),
+         flat_type =as_factor(flat_type),
+         flat_model = as_factor(flat_model),
+         storey_range = as_factor(storey_range))
+```
+
+
+# 1) What is the earlier lease commencement date and where are these flats located?
+
+
+```{r}
+sales %>% 
+  arrange(lease_commence_date) %>% 
+  select(lease_commence_date,town)
+
+#Jurong East, 1966
+```
+
+
+# 2) What are the largest HDB flats in Singapore? How much did they sell for?
+
+
+```{r}
+sales %>% 
+  arrange(desc(floor_area_sqm)) %>% 
+  select(town,flat_model,floor_area_sqm, resale_price, flat_type)
+
+# Kallang/Whampoa, 3 room Terrace flat, 280 sqm, $1.06 million
+```
+
+# 3) What is the most expensive flat in Punggol?
+```{r}
+sales %>% 
+  filter(town == "PUNGGOL") %>% 
+  arrange(desc(resale_price))
+
+# Most expensive flat in Punggol - 5 room premium apartment loft at $870,000
+```
+
+# 4)Which town has, on average, the largest flats (by floor area)?
+
+```{r}
+sales <-sales %>% 
+  group_by(town) %>% 
+  mutate(avg_floor_area = mean(floor_area_sqm))
+sales %>% 
+  select(town, avg_floor_area) %>% 
+  arrange(desc(avg_floor_area)) %>% 
+  distinct()
+
+# Largest flat by floor area - Pasir Ris
+```
+
+# 5)Which town has, on average, the cheapest flats per square meter?
+
+```{r}
+sales %>%
+  group_by(town) %>% 
+  mutate(avg_resale_price = mean(resale_price)) %>% 
+  mutate(cost_per_sqm = avg_resale_price/avg_floor_area) %>% 
+  arrange(cost_per_sqm) %>% 
+  select(town, cost_per_sqm) %>% 
+  distinct()
+
+# Cheapest flat per sqm is Choa Chu Kang at an average cost of $3522.71 per sqm
+```
+
