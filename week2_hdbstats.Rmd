@@ -1,0 +1,50 @@
+---
+title: "Week2_labpractice"
+author: "Fatin Zunairah"
+date: "07/02/2019"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(here) 
+library(googlesheets)
+library(readr)
+library(lubridate)
+library(forcats)
+```
+
+
+```{r}
+sales <-read_csv(here::here("Data/resale-flat-prices-based-on-registration-date-from-jan-2015-onwards.csv")) %>% 
+  mutate(month = ymd(month, truncated=1),
+         flat_type =as_factor(flat_type),
+         flat_model = as_factor(flat_model),
+         storey_range = as_factor(storey_range))
+```
+
+```{r}
+saveRDS(sales, here::here("Data/sales.rds"))
+sales <- readRDS(here::here("Data/sales.rds"))
+```
+
+
+##Mode Function
+```{r}
+manual_mode<- function(x, na.rm = FALSE){
+  if(na.rm){
+    x =x[!is.na(x)]
+  }
+
+
+ux <- unique(x)
+return(ux[which.max(tabulate(match(x,ux)))])
+}
+
+```
+
+```{r}
+
+```
+
